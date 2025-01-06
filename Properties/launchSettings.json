@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SteganographyInPicture (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SteganographyInPicture (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
