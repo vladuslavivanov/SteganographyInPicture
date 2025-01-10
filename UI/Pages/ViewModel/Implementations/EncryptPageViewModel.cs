@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using SixLabors.ImageSharp;
+using SteganographyInPicture.DTO;
 using SteganographyInPicture.Enums;
 using SteganographyInPicture.Factories;
 using SteganographyInPicture.Pages.ViewModel.Interfaces;
@@ -17,12 +19,11 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
 {
     public EncryptPageViewModel()
     {
-        OpenFileCommand = new AsyncRelayCommand(OpenFile);
         selectedEncoding = availableEncodings.FirstOrDefault();
     }
 
     [ObservableProperty]
-    private int encodingDepth = 1;
+    private int? encodingDepth = 1;
 
     [ObservableProperty]
     private ImageSteganographyMethodEnum selectedMethod = 
@@ -42,10 +43,13 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     private int quantityPixelsInGroups = 1;
 
     [ObservableProperty]
+    private int frequencyOfGroups;
+
+    [ObservableProperty]
     private string pathToImage;
 
     [ObservableProperty]
-    private string textToHide = "Secret Text";
+    private string textToHide = "";
 
     [ObservableProperty]
     private Visibility secretKeyVisible = Visibility.Collapsed;
@@ -53,14 +57,14 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     [ObservableProperty]
     private Visibility quantityPixelsInGroupsVisible = Visibility.Collapsed;
 
-    public IAsyncRelayCommand OpenFileCommand { get; } 
+    public ObservableCollection<InfoBar> InfoBarMessages { get; set; } = new();
 
+    [RelayCommand]
     async Task OpenFile()
     {
         OpenFileService openFileService = new OpenFileService();
         var path = await openFileService.OpenImage();
-        if (path is not null)
-            PathToImage = path;
+        PathToImage = path ?? "";
     }
 
     [RelayCommand]
@@ -71,15 +75,39 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     }
 
     [RelayCommand]
-    void EncryptImage()
+    async Task EncryptImage()
     {
         var imageSteganographyFactory = new ImageSteganographyFactory();
         var instanse = imageSteganographyFactory.GetPhotoSteganography(SelectedMethod);
 
-        var image = instanse.EncryptPhoto(new(Image.Load(PathToImage), TextToHide, SelectedEncoding, EncodingDepth, QuantityPixelsInGroups, SecretKey));        
+        EncryptPhotoResultDto encryptPhotoResultDto;
+        var infoBarService = new InfoBarService();
 
-        var path = "C:\\Users\\Vladislav\\Desktop\\image.png";
-        image.Save(path);        
+        try
+        {
+            encryptPhotoResultDto = instanse.EncryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), TextToHide, SelectedEncoding, EncodingDepth ?? 0, QuantityPixelsInGroups, SecretKey));
+        }
+        catch(Exception ex)
+        {
+            var infoBar = infoBarService.GetInfoBar("Ошибка!", ex.Message, InfoBarSeverity.Error);
+            infoBar.Closed += (sender, obj) =>
+            {
+                InfoBarMessages.Remove(sender);
+            };
+            InfoBarMessages.Add(infoBar);
+            return;
+        }
+
+        FrequencyOfGroups = encryptPhotoResultDto.frequencyOfGroups;
+
+        var exstensionImage = PathToImage.Substring(PathToImage.LastIndexOf('.')) ?? "";
+        
+        OpenFileService openFileService = new OpenFileService();
+        var path = await openFileService.SaveUs(new() { exstensionImage! });
+
+        if (string.IsNullOrEmpty(path)) return;
+
+        encryptPhotoResultDto.imageResult.Save(path);        
     }
 
     partial void OnSelectedMethodChanged(ImageSteganographyMethodEnum value)
@@ -92,4 +120,5 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
             QuantityPixelsInGroupsVisible = Visibility.Visible :
             QuantityPixelsInGroupsVisible = Visibility.Collapsed;
     }
+
 }

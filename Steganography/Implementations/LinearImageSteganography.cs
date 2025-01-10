@@ -30,7 +30,7 @@ internal class LinearImageSteganography : IImageSteganography
         return result.Remove(result.Length - 1);
     }
 
-    public Image EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
+    public EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
     {
         return ImageSteganography.EncryptPhoto(encryptPhotoDto, PixelSelector);
     }

@@ -1,12 +1,9 @@
 ﻿using SteganographyInPicture.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using WinRT.Interop;
 
 namespace SteganographyInPicture.Services.Implementations;
 
@@ -38,4 +35,25 @@ class OpenFileService : IOpenFileService
 
         return file?.Path;
     }
+
+    public async Task<string?> SaveUs(List<string> availableExstensions)
+    {
+        var picker = new FileSavePicker();
+
+        // See the sample code below for how to make the window accessible from the App class.
+        var window = App.Window;
+
+        // Retrieve the window handle (HWND) of the current WinUI 3 window.
+        var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+        // Initialize the file picker with the window handle (HWND).
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hWnd);
+
+        picker.FileTypeChoices.Add(new("Изображение", availableExstensions));
+
+        var file = await picker.PickSaveFileAsync();
+        
+        return file?.Path;
+    }
+
 }

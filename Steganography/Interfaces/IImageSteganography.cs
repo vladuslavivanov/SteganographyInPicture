@@ -8,7 +8,7 @@ internal interface IImageSteganography
     /// <summary>
     /// Скрыть информацию в фото.
     /// </summary>
-    Image EncryptPhoto(EncryptPhotoDto decryptPhotoDto);
+    EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto decryptPhotoDto);
 
     /// <summary>
     /// Получить секретную информацию с фото.

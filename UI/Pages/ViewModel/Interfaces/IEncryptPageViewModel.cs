@@ -1,8 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using SteganographyInPicture.Enums;
-using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace SteganographyInPicture.Pages.ViewModel.Interfaces;
 
@@ -11,7 +8,7 @@ interface IEncryptPageViewModel
     /// <summary>
     /// Глубина внедрения текста.
     /// </summary>
-    int EncodingDepth { get; set; }
+    int? EncodingDepth { get; set; }
 
     /// <summary>
     /// Метод стеганографии.
@@ -36,5 +33,5 @@ interface IEncryptPageViewModel
     /// <summary>
     /// Стеганографирование.
     /// </summary>
-    IRelayCommand EncryptImageCommand { get; }
+    IAsyncRelayCommand EncryptImageCommand { get; }
 }

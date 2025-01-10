@@ -13,13 +13,13 @@ namespace SteganographyInPicture.Steganography;
 
 internal class ImageSteganography
 {
-    public static Image EncryptPhoto(EncryptPhotoDto encryptPhotoDto, Func<PixelSelectorDto, IEnumerable<int>> pixelSelector)
+    public static EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto, Func<PixelSelectorDto, IEnumerable<int>> pixelSelector)
     {
         #region Валидация
 
         if (encryptPhotoDto.BitDepth < 1)
         {
-            throw new ArgumentException(nameof(encryptPhotoDto.BitDepth), "Глубина встраивания не может быть менее 1.");
+            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
         }
 
         #endregion
@@ -81,7 +81,7 @@ internal class ImageSteganography
         // Изображение с зашифрованной информацией.
         var newImage = Image.LoadPixelData(new ReadOnlySpan<Rgb24>(arrayOfPixels), cloneImage.Width, cloneImage.Height);
 
-        return newImage;
+        return new(newImage, frequencyOfGroups());
     }
 
     public static string DecryptPhoto(DecryptPhotoDto decryptPhotoDto, Func<PixelSelectorDto, IEnumerable<int>> pixelSelector)
@@ -90,7 +90,7 @@ internal class ImageSteganography
 
         if (decryptPhotoDto.BitDepth < 1)
         {
-            throw new ArgumentException(nameof(decryptPhotoDto.BitDepth), "Глубина встраивания не может быть менее 1.");
+            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
         }
 
         #endregion

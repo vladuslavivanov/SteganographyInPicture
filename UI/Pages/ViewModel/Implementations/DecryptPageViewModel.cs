@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
-using SixLabors.ImageSharp;
+using Microsoft.UI.Xaml.Controls;
 using SteganographyInPicture.Enums;
 using SteganographyInPicture.Factories;
 using SteganographyInPicture.Services.Implementations;
@@ -55,6 +55,8 @@ internal partial class DecryptPageViewModel : ObservableObject
 
     public IAsyncRelayCommand OpenFileCommand { get; }
 
+    public ObservableCollection<InfoBar> InfoBarMessages { get; set; } = new();
+
     async Task OpenFile()
     {
         OpenFileService openFileService = new OpenFileService();
@@ -69,7 +71,24 @@ internal partial class DecryptPageViewModel : ObservableObject
         var imageSteganographyFactory = new ImageSteganographyFactory();
         var instanse = imageSteganographyFactory.GetPhotoSteganography(SelectedMethod);
 
-        var text = instanse.DecryptPhoto(new(Image.Load(PathToImage), SelectedEncoding, EncodingDepth, (int)QuantityPixelsInGroups, 271151, SecretKey));
+        var infoBarService = new InfoBarService();
+
+        var text = default(string);
+        try
+        {
+            text = instanse.DecryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), SelectedEncoding, EncodingDepth, QuantityPixelsInGroups ?? 0, 271151, SecretKey));
+        }
+        catch (Exception ex) 
+        {
+            var infoBar = infoBarService.GetInfoBar("Ошибка!", ex.Message, InfoBarSeverity.Error);
+            infoBar.Closed += (sender, obj) =>
+            {
+                InfoBarMessages.Remove(sender);
+            };
+            InfoBarMessages.Add(infoBar);
+            return;
+        }
+
         DecryptedText = text;
     }
 

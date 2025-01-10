@@ -27,7 +27,7 @@ internal class PseudorandomImageSteganography : IImageSteganography
         return result.Remove(result.Length - 1);
     }
 
-    public Image EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
+    public EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
     {
         return ImageSteganography.EncryptPhoto(encryptPhotoDto, PixelSelector);
     }
@@ -38,7 +38,7 @@ internal class PseudorandomImageSteganography : IImageSteganography
 
         if (string.IsNullOrEmpty(pixelSelectorDto.SecretKey))
         {
-            throw new ArgumentNullException(nameof(pixelSelectorDto.SecretKey));
+            throw new ArgumentNullException(null, "Секретный элемент не может быть пустым!");
         }
 
         #endregion

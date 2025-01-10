@@ -9,146 +9,172 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:SteganographyInPicture.Converters"
+    xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <converters:ImageSteganographyMethodEnumConverter x:Key="ImageSteganographyMethodEnumConverter" />
+        <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+        <toolkitConverters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+        <toolkitConverters:EmptyStringToObjectConverter x:Key="EmptyStringToObjectConverter"
+                                          EmptyValue="False"
+                                          NotEmptyValue="True" />
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical" Spacing="10" Margin="10" HorizontalAlignment="Stretch">
-            <controls:SettingsCard ContentAlignment="Left">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Spacing="10" HorizontalAlignment="Left">
-                        <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.OpenFileCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <SymbolIcon Symbol="Import"/>
-                                <TextBlock Text="Открыть картинку"/>
-                            </StackPanel>
-                        </Button>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" Spacing="10" Margin="10" HorizontalAlignment="Stretch">
+                <controls:SettingsCard ContentAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Spacing="10" HorizontalAlignment="Left">
+                            <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.OpenFileCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <SymbolIcon Symbol="Import"/>
+                                    <TextBlock Text="Открыть картинку для дешифрования"/>
+                                </StackPanel>
+                            </Button>
 
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <TextBlock Text="Путь к картинке: " VerticalAlignment="Center"/>
-                            <TextBlock Text="{x:Bind ViewModel.PathToImage, Mode=TwoWay}" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ViewModel.PathToImage, Mode=TwoWay}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="Путь к картинке: " VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ViewModel.PathToImage, Mode=TwoWay}" VerticalAlignment="Center" ToolTipService.ToolTip="{x:Bind ViewModel.PathToImage, Mode=TwoWay}"/>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
 
-            </controls:SettingsCard>
+                </controls:SettingsCard>
 
-            <controls:SettingsExpander Header="Настройки стеганографии" HeaderIcon="Setting">
-                <controls:SettingsExpander.Items>
+                <controls:SettingsExpander Header="Настройки стеганографии" HeaderIcon="Setting"
+                                           Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+                    <controls:SettingsExpander.Items>
 
-                    <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="Глубина внедрения в канал"/>
+                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Глубина внедрения в канал"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <NumberBox Minimum="1" Maximum="8" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Width="200" Value="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
+                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Глубина внедрения указывает количество бит, используемых для скрытия данных в канале пикселя изображения."/>
+                                </StackPanel>
+                            </StackPanel>
+                        </controls:SettingsCard>
+
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">
+                            <StackPanel HorizontalAlignment="Stretch">
+
+                                <TextBlock Text="Тип распределения текста по файлу"/>
+
+                                <RadioButtons>
+                                    <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Linear}">
+                                        <RadioButton.Content>
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="Линейное распределение"/>
+                                                <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются последовательно вдоль изображения, начиная с первой доступной позиции."/>
+                                            </StackPanel>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+
+                                    <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Uniform}">
+                                        <RadioButton.Content>
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="Равномерное распределение"/>
+                                                <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются равномерно по всему изображению."/>
+                                            </StackPanel>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+
+                                    <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Pseudorandom}">
+                                        <RadioButton.Content>
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="Псевдослучайное распределение"/>
+                                                <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются в псевдослучайных местах изображения, используя секретный элемент."/>
+                                            </StackPanel>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+                                </RadioButtons>
+
+                                <StackPanel Spacing="10" Orientation="Vertical" Visibility="{x:Bind ViewModel.SecretKeyVisible, Mode=TwoWay}" >
+                                    <StackPanel Spacing="10" Orientation="Horizontal">
+                                        <TextBlock Text="Секретный элемент" VerticalAlignment="Center"/>
+                                        <TextBox PlaceholderText="Введите текст" Width="200" Text="{x:Bind ViewModel.SecretKey, Mode=TwoWay}"/>
+                                        <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Строка необходима для генерации хэша, который будет использоваться для сокрытия данных в изображении."/>
+                                    </StackPanel>
+                                </StackPanel>
+
+
+                                <StackPanel Spacing="10" Orientation="Vertical" Visibility="{x:Bind ViewModel.QuantityPixelsInGroupsVisible, Mode=TwoWay}">
+                                    <StackPanel Spacing="10" Orientation="Horizontal">
+                                        <TextBlock Text="Количество пикселей в группе" VerticalAlignment="Center"/>
+                                        <NumberBox PlaceholderText="Введите число" Width="200" Minimum="1" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Value="{x:Bind ViewModel.QuantityPixelsInGroups, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
+                                        <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Указывает то, сколько в одной группе будет подряд идущих пикселей с шифрованной информацией."/>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="10" Orientation="Horizontal">
+                                        <TextBlock Text="Частота групп" VerticalAlignment="Center"/>
+                                        <NumberBox PlaceholderText="Введите число" Width="200" Minimum="1" ValidationMode="InvalidInputOverwritten" 
+                                                   Value="{x:Bind ViewModel.FrequencyOfGroups, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                            </StackPanel>
+                        </controls:SettingsCard>
+
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">
+                            <StackPanel Spacing="10" HorizontalAlignment="Stretch">
+
+                                <TextBlock Text="Кодировка"/>
+                                <ComboBox ItemsSource="{x:Bind ViewModel.AvailableEncodings, Mode=TwoWay}" 
+                                          SelectedItem="{x:Bind ViewModel.SelectedEncoding, Mode=TwoWay}"/>
+
+                            </StackPanel>
+                        </controls:SettingsCard>
+
+
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical" >
+
+                            <StackPanel HorizontalAlignment="Stretch" Spacing="10">
+
+                                <TextBlock Text="Расшифрованный текст"/>
+                                <TextBox HorizontalAlignment="Stretch"
+                                         TextWrapping="Wrap" MaxHeight="200"
+                                         IsReadOnly="True"
+                                         Text="{x:Bind ViewModel.DecryptedText, Mode=TwoWay}"/>
+
+                            </StackPanel>
+
+                        </controls:SettingsCard>
+
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+
+                <controls:SettingsCard ContentAlignment="Left"
+                                       Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+                    <StackPanel>
+                        <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.DecryptImageCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <NumberBox Minimum="1" Maximum="8" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Width="200" Text="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay}"/>
-                                <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Глубина внедрения указывает количество бит, используемых для скрытия данных в канале пикселя изображения."/>
+                                <FontIcon Glyph="&#xEDE1;"/>
+                                <TextBlock Text="Расшифровать текст"/>
                             </StackPanel>
-                        </StackPanel>
-                    </controls:SettingsCard>
+                        </Button>
+                    </StackPanel>
+                </controls:SettingsCard>
 
-                    <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">
-                        <StackPanel HorizontalAlignment="Stretch">
+            </StackPanel>
+        </ScrollViewer>
 
-                            <TextBlock Text="Тип распределения текста по файлу"/>
-
-                            <RadioButtons>
-                                <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Linear}">
-                                    <RadioButton.Content>
-                                        <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <TextBlock Text="Линейное распределение"/>
-                                            <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются последовательно вдоль изображения, начиная с первой доступной позиции."/>
-                                        </StackPanel>
-                                    </RadioButton.Content>
-                                </RadioButton>
-
-                                <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Uniform}">
-                                    <RadioButton.Content>
-                                        <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <TextBlock Text="Равномерное распределение"/>
-                                            <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются равномерно по всему изображению."/>
-                                        </StackPanel>
-                                    </RadioButton.Content>
-                                </RadioButton>
-
-                                <RadioButton IsChecked="{x:Bind ViewModel.SelectedMethod, Mode=TwoWay, Converter={StaticResource ImageSteganographyMethodEnumConverter}, ConverterParameter=Pseudorandom}">
-                                    <RadioButton.Content>
-                                        <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <TextBlock Text="Псевдослучайное распределение"/>
-                                            <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Данные скрываются в псевдослучайных местах изображения, используя секретный элемент."/>
-                                        </StackPanel>
-                                    </RadioButton.Content>
-                                </RadioButton>
-                            </RadioButtons>
-
-                            <StackPanel Spacing="10" Orientation="Vertical" Visibility="{x:Bind ViewModel.SecretKeyVisible, Mode=TwoWay}" >
-                                <StackPanel Spacing="10" Orientation="Horizontal">
-                                    <TextBlock Text="Секретный элемент" VerticalAlignment="Center"/>
-                                    <TextBox PlaceholderText="Введите текст" Width="200" Text="{x:Bind ViewModel.SecretKey, Mode=TwoWay}"/>
-                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Строка необходима для генерации хэша, который будет использоваться для сокрытия данных в изображении."/>
-                                </StackPanel>
-                            </StackPanel>
-
-
-                            <StackPanel Spacing="10" Orientation="Vertical" Visibility="{x:Bind ViewModel.QuantityPixelsInGroupsVisible, Mode=TwoWay}">
-                                <StackPanel Spacing="10" Orientation="Horizontal">
-                                    <TextBlock Text="Количество пикселей в группе" VerticalAlignment="Center"/>
-                                    <NumberBox PlaceholderText="Введите число" Width="200" Minimum="1" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Text="{x:Bind ViewModel.QuantityPixelsInGroups, Mode=TwoWay}"/>
-                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Указывает то, сколько в одной группе будет подряд идущих пикселей с шифрованной информацией."/>
-                                </StackPanel>
-
-                                <StackPanel Spacing="10" Orientation="Horizontal">
-                                    <TextBlock Text="Частота групп" VerticalAlignment="Center"/>
-                                    <NumberBox PlaceholderText="Введите число" Width="200" Minimum="1" ValidationMode="InvalidInputOverwritten" Text="{x:Bind ViewModel.FrequencyOfGroups, Mode=TwoWay}"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                        </StackPanel>
-                    </controls:SettingsCard>
-
-                    <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">
-                        <StackPanel Spacing="10" HorizontalAlignment="Stretch">
-
-                            <TextBlock Text="Кодировка"/>
-                            <ComboBox ItemsSource="{x:Bind ViewModel.AvailableEncodings, Mode=TwoWay}" 
-                                      SelectedItem="{x:Bind ViewModel.SelectedEncoding, Mode=TwoWay}"/>
-
-                        </StackPanel>
-                    </controls:SettingsCard>
-
-
-                    <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical" >
-
-                        <StackPanel HorizontalAlignment="Stretch" Spacing="10">
-
-                            <TextBlock Text="Расшифрованный текст"/>
-                            <TextBox HorizontalAlignment="Stretch"
-                                     TextWrapping="Wrap" MaxHeight="200"
-                                     IsReadOnly="True"
-                                     Text="{x:Bind ViewModel.DecryptedText, Mode=TwoWay}"/>
-
-                        </StackPanel>
-
-                    </controls:SettingsCard>
-
-                </controls:SettingsExpander.Items>
-            </controls:SettingsExpander>
-
-            <controls:SettingsCard ContentAlignment="Left">
-                <StackPanel>
-                    <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.DecryptImageCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <FontIcon Glyph="&#xEDE1;"/>
-                            <TextBlock Text="Расшифровать текст"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </controls:SettingsCard>
-
-        </StackPanel>
-    </ScrollViewer>
-
+        <ScrollViewer VerticalAlignment="Bottom" MaxHeight="200" VerticalScrollBarVisibility="Hidden">
+            <ItemsControl ItemsSource="{x:Bind ViewModel.InfoBarMessages}" Margin="10">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <InfoBar/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Bottom" MaxHeight="400"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+        
+    </Grid>
 </Page>

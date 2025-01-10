@@ -27,7 +27,7 @@ internal class UniformImageSteganography : IImageSteganography
 
         if (decryptPhotoDto.BitDepth < 1)
         {
-            throw new ArgumentException(nameof(decryptPhotoDto.BitDepth), "Глубина встраивания не может быть менее 1.");
+            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
         }
 
         #endregion
@@ -37,7 +37,7 @@ internal class UniformImageSteganography : IImageSteganography
         return result.Remove(result.Length - 1);
     }
 
-    public Image EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
+    public EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
     {
         return ImageSteganography.EncryptPhoto(encryptPhotoDto, PixelSelector);
     }
@@ -48,12 +48,14 @@ internal class UniformImageSteganography : IImageSteganography
 
         if (pixelSelectorDto.FrequencyOfGroups < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(pixelSelectorDto.FrequencyOfGroups));
+            throw new ArgumentOutOfRangeException(null, 
+                "Частота групп не может быть менее 1.");
         }
 
         if (pixelSelectorDto.QuantityPixelsInGroup < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(pixelSelectorDto.QuantityPixelsInGroup));
+            throw new ArgumentOutOfRangeException(null, 
+                "Количество пикселей в группе не может быть менее 1.");
         }
 
         #endregion
