@@ -3,17 +3,19 @@ using SixLabors.ImageSharp.PixelFormats;
 using SteganographyInPicture.Consts;
 using SteganographyInPicture.DTO;
 using SteganographyInPicture.Enums;
+using SteganographyInPicture.Extensions;
 using SteganographyInPicture.Services.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SteganographyInPicture.Steganography;
 
 internal class ImageSteganography
 {
-    public static EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto, Func<PixelSelectorDto, IEnumerable<int>> pixelSelector)
+    public static async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto, Func<PixelSelectorDto, IEnumerable<int>> pixelSelector)
     {
         #region Валидация
 
@@ -23,9 +25,6 @@ internal class ImageSteganography
         }
 
         #endregion
-
-        // Текст с терминатором.
-        var text = encryptPhotoDto.Text + '\0';
 
         // Копия изображения.
         var cloneImage = encryptPhotoDto.Image.CloneAs<Rgb24>();
@@ -37,7 +36,8 @@ internal class ImageSteganography
         cloneImage.CopyPixelDataTo(arrayOfPixels);
 
         // Пиксели только с сокрытыми данными.
-        var textInPixels = new ConverterService().ConvertTextToRgb24Array(text, encryptPhotoDto.BitDepth, encryptPhotoDto.Encoding).ToArray();
+        var textInPixels = (await new ConverterService().ConvertTextToRgb24ArrayAsync(encryptPhotoDto.Text, encryptPhotoDto.BitDepth, encryptPhotoDto.Encoding, encryptPhotoDto.Compression))
+            .ToArray();
 
         if (textInPixels.Count() > arrayOfPixels.Length)
         {
@@ -106,6 +106,8 @@ internal class ImageSteganography
         var symbol = default(byte);
         var countBits = default(int);
 
+        var quantityBytes = default(int);
+
         foreach (var iteratorOfPixel in pixelSelector(new(pixelsSpan, decryptPhotoDto.QuantityPixelsInGroup, decryptPhotoDto.FrequencyOfGroups, decryptPhotoDto.SecretKey)))
         {
             var pixel = pixelsSpan[iteratorOfPixel];
@@ -133,16 +135,30 @@ internal class ImageSteganography
                         countBits = 0;
                         symbol = default;
 
-                        // Проверка маркера конца текста.
-                        if (symbol == EncodingConsts.MARKER_END_OF_STRING &&
-                            converterService.CheckArrayOfBytesOnNullTermenator(arrayOfBytes, decryptPhotoDto.Encoding))
+                        if (arrayOfBytes.Count == 4 && quantityBytes == default)
+                        {
+                            quantityBytes = BitConverter.ToInt32(arrayOfBytes.ToArray());
+                            arrayOfBytes.Clear();
+
+                            var availableBitsForReading = pixelsSpan.Length * EncodingConsts.CHANNEL_COUNT * decryptPhotoDto.BitDepth;
+
+                            if (quantityBytes > availableBitsForReading / 8 || quantityBytes < 0)
+                            {
+                                throw new IndexOutOfRangeException($"Ошибка декодирования. " +
+                                    $"Неверно указано количество байт для чтения в изображении -  {quantityBytes}. " +
+                                    $"В изображении доступно всего {availableBitsForReading / 8} байт для сокрытия информации.");
+                            }
+                        }
+
+                        // Проверка на то, что прочтены все байты.
+                        if (arrayOfBytes.Count == quantityBytes)
                         {
                             return decryptPhotoDto.Encoding switch
                             {
-                                EncodingEnum.UTF8 => Encoding.UTF8.GetString(arrayOfBytes.ToArray()),
-                                EncodingEnum.UNICODE => Encoding.Unicode.GetString(arrayOfBytes.ToArray()),
-                                EncodingEnum.UTF32 => Encoding.UTF32.GetString(arrayOfBytes.ToArray()),
-                                EncodingEnum.ASCII => Encoding.ASCII.GetString(arrayOfBytes.ToArray()),
+                                EncodingEnum.UTF8 => Encoding.UTF8.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+                                EncodingEnum.UNICODE => Encoding.Unicode.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+                                EncodingEnum.UTF32 => Encoding.UTF32.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+                                EncodingEnum.ASCII => Encoding.ASCII.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
                                 _ => throw new ArgumentOutOfRangeException(nameof(decryptPhotoDto.Encoding)),
                             };
                         }
@@ -154,10 +170,10 @@ internal class ImageSteganography
 
         return decryptPhotoDto.Encoding switch
         {
-            EncodingEnum.UTF8 => Encoding.UTF8.GetString(arrayOfBytes.ToArray()),
-            EncodingEnum.UNICODE => Encoding.Unicode.GetString(arrayOfBytes.ToArray()),
-            EncodingEnum.UTF32 => Encoding.UTF32.GetString(arrayOfBytes.ToArray()),
-            EncodingEnum.ASCII => Encoding.ASCII.GetString(arrayOfBytes.ToArray()),
+            EncodingEnum.UTF8 => Encoding.UTF8.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+            EncodingEnum.UNICODE => Encoding.Unicode.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+            EncodingEnum.UTF32 => Encoding.UTF32.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
+            EncodingEnum.ASCII => Encoding.ASCII.GetString(arrayOfBytes.ToArray().DecompressBytesAsync(decryptPhotoDto.Compression).Result),
             _ => throw new ArgumentOutOfRangeException(nameof(decryptPhotoDto.Encoding)),
         };
 

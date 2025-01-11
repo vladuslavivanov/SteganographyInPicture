@@ -8,10 +8,13 @@ namespace SteganographyInPicture.DTO;
 /// <param name="BitDepth">Количество битов для встраивания в каждый канал пикселя (RGB).</param>
 /// <param name="QuantityPixelsInGroup">Количество пикселей в группе пикселей.</param>
 /// <param name="SecretKey">Секретный ключ.</param>
+/// <param name="Encoding">Кодировка текста.</param>
+/// <param name="Compression">Тип сжатия.</param>
 internal record EncryptPhotoDto(
     Image Image, 
     string Text, 
     EncodingEnum Encoding, 
     int BitDepth, 
     int QuantityPixelsInGroup, 
-    string SecretKey);
+    string SecretKey,
+    CompressionsEnum Compression);

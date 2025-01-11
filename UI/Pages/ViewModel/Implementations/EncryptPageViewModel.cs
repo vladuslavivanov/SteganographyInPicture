@@ -23,7 +23,7 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     }
 
     [ObservableProperty]
-    private int? encodingDepth = 1;
+    private int encodingDepth = 1;
 
     [ObservableProperty]
     private ImageSteganographyMethodEnum selectedMethod = 
@@ -35,6 +35,13 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     [ObservableProperty]
     private ObservableCollection<EncodingEnum> availableEncodings = 
         new(Enum.GetValues<EncodingEnum>());
+
+    [ObservableProperty]
+    private CompressionsEnum selectedCompression;
+
+    [ObservableProperty]
+    private ObservableCollection<CompressionsEnum> availableCompressions =
+        new(Enum.GetValues<CompressionsEnum>());
 
     [ObservableProperty]
     private string secretKey = "";
@@ -85,7 +92,7 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
 
         try
         {
-            encryptPhotoResultDto = instanse.EncryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), TextToHide, SelectedEncoding, EncodingDepth ?? 0, QuantityPixelsInGroups, SecretKey));
+            encryptPhotoResultDto = await instanse.EncryptPhotoAsync(new(SixLabors.ImageSharp.Image.Load(PathToImage), TextToHide, SelectedEncoding, EncodingDepth, QuantityPixelsInGroups, SecretKey, SelectedCompression));
         }
         catch(Exception ex)
         {

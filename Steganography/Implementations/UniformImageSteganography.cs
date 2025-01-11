@@ -5,6 +5,7 @@ using SteganographyInPicture.DTO;
 using SteganographyInPicture.Steganography.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SteganographyInPicture.Steganography.Implementations;
 
@@ -37,9 +38,9 @@ internal class UniformImageSteganography : IImageSteganography
         return result.Remove(result.Length - 1);
     }
 
-    public EncryptPhotoResultDto EncryptPhoto(EncryptPhotoDto encryptPhotoDto)
+    public async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto)
     {
-        return ImageSteganography.EncryptPhoto(encryptPhotoDto, PixelSelector);
+        return await ImageSteganography.EncryptPhotoAsync(encryptPhotoDto, PixelSelector);
     }
 
     IEnumerable<int> PixelSelector(PixelSelectorDto pixelSelectorDto)

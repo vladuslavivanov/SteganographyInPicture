@@ -1,17 +1,19 @@
 ﻿using SixLabors.ImageSharp.PixelFormats;
 using SteganographyInPicture.Consts;
 using SteganographyInPicture.Enums;
+using SteganographyInPicture.Extensions;
 using SteganographyInPicture.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SteganographyInPicture.Services.Implementations;
 
 internal class ConverterService : IConverterService
 {
-    public List<Rgb24> ConvertTextToRgb24Array(string text, int availableBitsInChannel, EncodingEnum encoding)
+    public async Task<List<Rgb24>> ConvertTextToRgb24ArrayAsync(string text, int availableBitsInChannel, EncodingEnum encoding, CompressionsEnum compression)
     {
         var answer = new List<Rgb24>();
 
@@ -24,6 +26,10 @@ internal class ConverterService : IConverterService
             _ => throw new ArgumentOutOfRangeException(nameof(encoding)),
         };
 
+        byteArray = await byteArray.CompressBytesAsync(compression);
+        var lengthByteArray = BitConverter.GetBytes(byteArray.Length);
+        byteArray =  lengthByteArray.Concat(byteArray).ToArray();
+        
         // Номер текущего символа.
         var numberChar = 0;
 

@@ -8,7 +8,7 @@ interface IEncryptPageViewModel
     /// <summary>
     /// Глубина внедрения текста.
     /// </summary>
-    int? EncodingDepth { get; set; }
+    int EncodingDepth { get; set; }
 
     /// <summary>
     /// Метод стеганографии.

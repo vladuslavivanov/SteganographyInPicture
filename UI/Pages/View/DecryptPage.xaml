@@ -119,12 +119,17 @@
                         </controls:SettingsCard>
 
                         <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">
-                            <StackPanel Spacing="10" HorizontalAlignment="Stretch">
-
-                                <TextBlock Text="Кодировка"/>
-                                <ComboBox ItemsSource="{x:Bind ViewModel.AvailableEncodings, Mode=TwoWay}" 
-                                          SelectedItem="{x:Bind ViewModel.SelectedEncoding, Mode=TwoWay}"/>
-
+                            <StackPanel Spacing="20" Orientation="Horizontal">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Кодировка"/>
+                                    <ComboBox ItemsSource="{x:Bind ViewModel.AvailableEncodings, Mode=TwoWay}" 
+                                              SelectedItem="{x:Bind ViewModel.SelectedEncoding, Mode=TwoWay}"/>
+                                </StackPanel>
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Сжатие"/>
+                                    <ComboBox ItemsSource="{x:Bind ViewModel.AvailableCompressions, Mode=TwoWay}" 
+                                              SelectedItem="{x:Bind ViewModel.SelectedCompression, Mode=TwoWay}"/>
+                                </StackPanel>
                             </StackPanel>
                         </controls:SettingsCard>
 

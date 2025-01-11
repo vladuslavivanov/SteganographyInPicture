@@ -9,6 +9,7 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:menuItem="using:SteganographyInPicture.Models"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:animation="using:Microsoft.UI.Xaml.Media.Animation"
     mc:Ignorable="d"
@@ -16,7 +17,9 @@
 
     <Grid x:Name="MainGrid">
 
-        <NavigationView IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneOpen="False">
+        <NavigationView IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneOpen="False"
+                        MenuItemsSource="{x:Bind ViewModel.MenuItems}">
+            
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemInvoked">
                     <core:EventTriggerBehavior.Actions>
@@ -25,33 +28,17 @@
                 </core:EventTriggerBehavior>
             </interactivity:Interaction.Behaviors>
 
-            <NavigationView.MenuItems>
-                <NavigationViewItem Content="Кодирование">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE72E;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+            <NavigationView.MenuItemTemplate>
+                <DataTemplate x:DataType="menuItem:MenuItemModel">
+                    <NavigationViewItem Content="{x:Bind Name}" Tag="{x:Bind}">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="{x:Bind GlyphIcon}" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </DataTemplate>
+            </NavigationView.MenuItemTemplate>
 
-                <NavigationViewItem Content="Декодирование">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE785;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem Content="Удалить информацию">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xED61;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem Content="Обучение">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xEA80;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-            </NavigationView.MenuItems>
-
-            <Frame Content="{x:Bind ViewModel.Frame, Mode=TwoWay}"/>
+            <Frame Content="{x:Bind ViewModel.SelectedItem.Page, Mode=OneWay}"/>
 
         </NavigationView>
     </Grid>

@@ -3,8 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using SteganographyInPicture.UI.Pages.View;
-using Microsoft.UI.Xaml.Media.Animation;
-using Windows.Foundation.Collections;
+using SteganographyInPicture.Models;
+using System;
 
 namespace SteganographyInPicture.UI.Windows.ViewModel;
 
@@ -12,37 +12,34 @@ public partial class MainWindowViewModel : ObservableObject
 {
     public MainWindowViewModel()
     {
-        frame = lists[0];
+        selectedItem = menuItems[0];
     }
 
-    List<Page> lists = new()
+    [ObservableProperty]
+    List<MenuItemModel> menuItems = new()
     {
-        new EncryptPage(),
-        new DecryptPage(),
-        new StudyPage(),
-        new EraseImagePage(),
+        new(new EncryptPage(), "Кодирование", "\uE72E"),
+        new(new DecryptPage(), "Декодирование", "\uE785"),
+        new(new CalculatorPage(), "Ручной расчет", "\uE8EF"),
+        new(new EraseImagePage(), "Удалить информацию", "\uED61"),
+        new(new StudyPage(), "Обучение", "\uEA80"),
     };
 
     [ObservableProperty]
-    private Page frame = new();
+    MenuItemModel selectedItem;
 
     [RelayCommand]
     void Navigate(NavigationViewItemInvokedEventArgs args)
     {
-        switch (args.InvokedItem)
+        if (args.InvokedItemContainer != null &&
+            args.InvokedItemContainer.Tag != null &&
+            args.InvokedItemContainer.Tag is MenuItemModel)
         {
-            case "Кодирование":
-                Frame = lists[0];
-                break;
-            case "Декодирование":
-                Frame = lists[1];
-                break;
-            case "Обучение":
-                Frame = lists[2];
-                break;
-            case "Удалить информацию":
-                Frame = lists[3];
-                break;
+            SelectedItem = args.InvokedItemContainer.Tag as MenuItemModel ??
+                throw new Exception();
+            return;
         }
+        SelectedItem = args.InvokedItem as MenuItemModel ??
+            throw new Exception();
     }
 }

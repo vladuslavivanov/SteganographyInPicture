@@ -33,13 +33,20 @@ internal partial class DecryptPageViewModel : ObservableObject
         new(Enum.GetValues<EncodingEnum>());
 
     [ObservableProperty]
+    private CompressionsEnum selectedCompression;
+
+    [ObservableProperty]
+    private ObservableCollection<CompressionsEnum> availableCompressions =
+        new(Enum.GetValues<CompressionsEnum>());
+
+    [ObservableProperty]
     private string secretKey = "";
 
     [ObservableProperty]
-    private int? quantityPixelsInGroups;
+    private int quantityPixelsInGroups;
 
     [ObservableProperty]
-    private int? frequencyOfGroups;
+    private int frequencyOfGroups;
 
     [ObservableProperty]
     private string decryptedText = "";
@@ -76,7 +83,7 @@ internal partial class DecryptPageViewModel : ObservableObject
         var text = default(string);
         try
         {
-            text = instanse.DecryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), SelectedEncoding, EncodingDepth, QuantityPixelsInGroups ?? 0, 271151, SecretKey));
+            text = instanse.DecryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), SelectedEncoding, EncodingDepth, QuantityPixelsInGroups, FrequencyOfGroups, SecretKey, SelectedCompression));
         }
         catch (Exception ex) 
         {
