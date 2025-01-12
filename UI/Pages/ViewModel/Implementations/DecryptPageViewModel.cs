@@ -3,10 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using SteganographyInPicture.Enums;
+using SteganographyInPicture.Models;
 using SteganographyInPicture.Factories;
 using SteganographyInPicture.Services.Implementations;
+using SteganographyInPicture.UI.CustomControls.ViewModel;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SteganographyInPicture.UI.Pages.ViewModel.Implementations;
@@ -60,6 +63,11 @@ internal partial class DecryptPageViewModel : ObservableObject
     [ObservableProperty]
     private Visibility quantityPixelsInGroupsVisible = Visibility.Collapsed;
 
+    [ObservableProperty]
+    private ObservableCollection<PixelChannelControlViewModel> availablePixelChannels =
+      new(Enum.GetValues<PixelChannelsEnum>()
+          .Select(p => new PixelChannelControlViewModel(new PixelChannelModel() { PixelChannel = p })));
+
     public IAsyncRelayCommand OpenFileCommand { get; }
 
     public ObservableCollection<InfoBar> InfoBarMessages { get; set; } = new();
@@ -83,7 +91,7 @@ internal partial class DecryptPageViewModel : ObservableObject
         var text = default(string);
         try
         {
-            text = instanse.DecryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), SelectedEncoding, EncodingDepth, QuantityPixelsInGroups, FrequencyOfGroups, SecretKey, SelectedCompression));
+            text = instanse.DecryptPhoto(new(SixLabors.ImageSharp.Image.Load(PathToImage), SelectedEncoding, AvailablePixelChannels.Select(p => p.Model), QuantityPixelsInGroups, FrequencyOfGroups, SecretKey, SelectedCompression));
         }
         catch (Exception ex) 
         {

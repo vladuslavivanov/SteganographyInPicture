@@ -1,7 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SteganographyInPicture.Consts;
-using SteganographyInPicture.DTO;
+﻿using SteganographyInPicture.DTO;
 using SteganographyInPicture.Steganography.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,26 +19,11 @@ internal class UniformImageSteganography : IImageSteganography
 
     #endregion
 
-    public string DecryptPhoto(DecryptPhotoDto decryptPhotoDto)
-    {
-        #region Валидация
+    public string DecryptPhoto(DecryptPhotoDto decryptPhotoDto) =>
+        ImageSteganography.DecryptPhoto(decryptPhotoDto, PixelSelector);
 
-        if (decryptPhotoDto.BitDepth < 1)
-        {
-            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
-        }
-
-        #endregion
-
-        var result = ImageSteganography.DecryptPhoto(decryptPhotoDto, PixelSelector);
-        
-        return result.Remove(result.Length - 1);
-    }
-
-    public async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto)
-    {
-        return await ImageSteganography.EncryptPhotoAsync(encryptPhotoDto, PixelSelector);
-    }
+    public async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto) =>
+        await ImageSteganography.EncryptPhotoAsync(encryptPhotoDto, PixelSelector);
 
     IEnumerable<int> PixelSelector(PixelSelectorDto pixelSelectorDto)
     {

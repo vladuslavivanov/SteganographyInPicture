@@ -1,10 +1,12 @@
 ﻿using SixLabors.ImageSharp;
 using SteganographyInPicture.Enums;
+using SteganographyInPicture.Models;
+using System.Collections.Generic;
 
 namespace SteganographyInPicture.DTO;
 
 /// <param name="Image">Фото.</param>
-/// <param name="BitDepth">Количество битов для встраивания в каждый канал пикселя (RGB).</param>
+/// <param name="PixelsBitDepth">Количество битов для встраивания в каждый каналы пикселей.</param>
 /// <param name="QuantityPixelsInGroup">Количество пикселей в группе пикселей.</param>
 /// <param name="FrequencyOfGroups">Частота групп.</param>
 /// <param name="SecretKey">Секретный ключ.</param>
@@ -12,8 +14,8 @@ namespace SteganographyInPicture.DTO;
 /// <param name="Compression">Тип сжатия.</param>
 internal record DecryptPhotoDto(
     Image Image, 
-    EncodingEnum Encoding, 
-    int BitDepth, 
+    EncodingEnum Encoding,
+    IEnumerable<PixelChannelModel> PixelsBitDepth, 
     int QuantityPixelsInGroup, 
     int FrequencyOfGroups, 
     string SecretKey,

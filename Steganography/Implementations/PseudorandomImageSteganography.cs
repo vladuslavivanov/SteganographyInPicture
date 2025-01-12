@@ -1,5 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SteganographyInPicture.DTO;
+﻿using SteganographyInPicture.DTO;
 using SteganographyInPicture.Steganography.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,18 +19,11 @@ internal class PseudorandomImageSteganography : IImageSteganography
 
     #endregion
 
-    public string DecryptPhoto(DecryptPhotoDto decryptPhotoDto)
-    {
-        var result =
-            ImageSteganography.DecryptPhoto(decryptPhotoDto, PixelSelector);
+    public string DecryptPhoto(DecryptPhotoDto decryptPhotoDto) => 
+        ImageSteganography.DecryptPhoto(decryptPhotoDto, PixelSelector);
 
-        return result.Remove(result.Length - 1);
-    }
-
-    public async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto)
-    {
-        return await ImageSteganography.EncryptPhotoAsync(encryptPhotoDto, PixelSelector);
-    }
+    public async Task<EncryptPhotoResultDto> EncryptPhotoAsync(EncryptPhotoDto encryptPhotoDto) =>
+        await ImageSteganography.EncryptPhotoAsync(encryptPhotoDto, PixelSelector);
 
     IEnumerable<int> PixelSelector(PixelSelectorDto pixelSelectorDto)
     {

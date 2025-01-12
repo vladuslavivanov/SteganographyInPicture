@@ -6,8 +6,10 @@ using SixLabors.ImageSharp;
 using SteganographyInPicture.DTO;
 using SteganographyInPicture.Enums;
 using SteganographyInPicture.Factories;
+using SteganographyInPicture.Models;
 using SteganographyInPicture.Pages.ViewModel.Interfaces;
 using SteganographyInPicture.Services.Implementations;
+using SteganographyInPicture.UI.CustomControls.ViewModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,27 +25,6 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     }
 
     [ObservableProperty]
-    private int encodingDepth = 1;
-
-    [ObservableProperty]
-    private ImageSteganographyMethodEnum selectedMethod = 
-        ImageSteganographyMethodEnum.Linear;
-
-    [ObservableProperty]
-    private EncodingEnum selectedEncoding;
-
-    [ObservableProperty]
-    private ObservableCollection<EncodingEnum> availableEncodings = 
-        new(Enum.GetValues<EncodingEnum>());
-
-    [ObservableProperty]
-    private CompressionsEnum selectedCompression;
-
-    [ObservableProperty]
-    private ObservableCollection<CompressionsEnum> availableCompressions =
-        new(Enum.GetValues<CompressionsEnum>());
-
-    [ObservableProperty]
     private string secretKey = "";
 
     [ObservableProperty]
@@ -53,10 +34,33 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
     private int frequencyOfGroups;
 
     [ObservableProperty]
-    private string pathToImage;
+    private string pathToImage = "";
 
     [ObservableProperty]
     private string textToHide = "";
+
+    [ObservableProperty]
+    private ImageSteganographyMethodEnum selectedMethod = 
+        ImageSteganographyMethodEnum.Linear;
+
+    [ObservableProperty]
+    private ObservableCollection<EncodingEnum> availableEncodings =
+        new(Enum.GetValues<EncodingEnum>());
+
+    [ObservableProperty]
+    private EncodingEnum selectedEncoding;
+
+    [ObservableProperty]
+    private ObservableCollection<CompressionsEnum> availableCompressions =
+        new(Enum.GetValues<CompressionsEnum>());
+
+    [ObservableProperty]
+    private CompressionsEnum selectedCompression;
+
+    [ObservableProperty]
+    private ObservableCollection<PixelChannelControlViewModel> availablePixelChannels =
+        new(Enum.GetValues<PixelChannelsEnum>()
+            .Select(p => new PixelChannelControlViewModel(new PixelChannelModel() { PixelChannel = p })));
 
     [ObservableProperty]
     private Visibility secretKeyVisible = Visibility.Collapsed;
@@ -92,7 +96,7 @@ public partial class EncryptPageViewModel : ObservableObject, IEncryptPageViewMo
 
         try
         {
-            encryptPhotoResultDto = await instanse.EncryptPhotoAsync(new(SixLabors.ImageSharp.Image.Load(PathToImage), TextToHide, SelectedEncoding, EncodingDepth, QuantityPixelsInGroups, SecretKey, SelectedCompression));
+            encryptPhotoResultDto = await instanse.EncryptPhotoAsync(new(SixLabors.ImageSharp.Image.Load(PathToImage), TextToHide, SelectedEncoding, AvailablePixelChannels.Select(p => p.Model), QuantityPixelsInGroups, SecretKey, SelectedCompression));
         }
         catch(Exception ex)
         {

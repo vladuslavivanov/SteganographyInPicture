@@ -53,7 +53,11 @@ static class ByteArrayExtension
                 {
                     using var outputStream = new MemoryStream();
                     using var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress);
-                    await gzipStream.CopyToAsync(outputStream);
+                    try
+                    {
+                        await gzipStream.CopyToAsync(outputStream);
+                    }
+                    catch (Exception ex) { }
                     await gzipStream.FlushAsync();
                     return outputStream.ToArray();
                 }

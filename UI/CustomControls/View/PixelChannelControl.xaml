@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="SteganographyInPicture.UI.CustomControls.View.PixelChannelControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SteganographyInPicture.UI.CustomControls.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:SteganographyInPicture.Converters"
+    mc:Ignorable="d">
+    
+    <UserControl.Resources>
+        <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+    </UserControl.Resources>
+    
+    <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="{x:Bind ViewModel.PixelChannel}" VerticalAlignment="Center"/>
+        <NumberBox Value="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" ValidationMode="InvalidInputOverwritten" SpinButtonPlacementMode="Inline" Width="150"/>
+    </StackPanel>
+</UserControl>

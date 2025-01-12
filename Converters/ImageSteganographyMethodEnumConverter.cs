@@ -12,14 +12,14 @@ public class ImageSteganographyMethodEnumConverter : IValueConverter
             return false;
 
         // Возвращаем true, если значение из перечисления совпадает с параметром радиокнопки
-        return value.ToString().Equals(parameter.ToString(), StringComparison.OrdinalIgnoreCase);
+        return value?.ToString()?.Equals(parameter.ToString(), StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
         if ((bool)value)
         {
-            return Enum.Parse(typeof(ImageSteganographyMethodEnum), parameter.ToString());
+            return Enum.Parse(typeof(ImageSteganographyMethodEnum), parameter.ToString() ?? "");
         }
 
         return 0;
