@@ -65,13 +65,16 @@ internal class PixelAssembler
             switch (_pixelChannelsEnumerator.Current.PixelChannel)
             {
                 case Enums.PixelChannelsEnum.R:
-                    currentPixel.R <<= 1;
+                    if (quntityBitsToWrite != quantityWritedBits)
+                        currentPixel.R <<= 1;
                     break;
                 case Enums.PixelChannelsEnum.G:
-                    currentPixel.G <<= 1;
+                    if (quntityBitsToWrite != quantityWritedBits)
+                        currentPixel.G <<= 1;
                     break;
                 case Enums.PixelChannelsEnum.B:
-                    currentPixel.B <<= 1;
+                    if (quntityBitsToWrite != quantityWritedBits)
+                        currentPixel.B <<= 1;
                     break;
                 default:
                     break;
