@@ -14,7 +14,7 @@ namespace SteganographyInPicture.UI.Pages.ViewModel.Implementations;
 
 public partial class CalculatorPageViewModel : ObservableObject
 {
-    List<RGBControlViewModel> allPixels;
+    List<RGBControlViewModel> allPixels = null!;
     int height = 0;
     int width = 0;
 

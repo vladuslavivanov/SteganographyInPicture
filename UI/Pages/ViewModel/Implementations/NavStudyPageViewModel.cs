@@ -103,9 +103,6 @@ public partial class NavStudyPageViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    Frame frame;
-
-    [ObservableProperty]
     List<StudyMenuItemModel> studyItems;
 
     [ObservableProperty]

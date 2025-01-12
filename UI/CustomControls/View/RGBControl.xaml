@@ -6,7 +6,6 @@
     xmlns:local="using:SteganographyInPicture.UI.CustomControls.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controlsViewModel ="using:SteganographyInPicture.UI.CustomControls.ViewModel"
     xmlns:converters="using:SteganographyInPicture.Converters"
     mc:Ignorable="d">
 

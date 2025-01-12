@@ -9,7 +9,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:SteganographyInPicture.Converters"
+    xmlns:controlsView ="using:SteganographyInPicture.UI.CustomControls.View"
+    xmlns:controlsViewModel ="using:SteganographyInPicture.UI.CustomControls.ViewModel"
     xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:primitives="using:CommunityToolkit.WinUI.Controls"
     xmlns:system="using:System"
 
     mc:Ignorable="d"
@@ -51,14 +54,29 @@
                                            Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
                     <controls:SettingsExpander.Items>
 
-                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+                        <controls:SettingsCard ContentAlignment="Left">
                             <StackPanel Spacing="10">
-                                <TextBlock Text="Глубина внедрения в канал"/>
+                                
                                 <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <NumberBox Minimum="1" Maximum="8" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Width="200" Value="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
+                                    <TextBlock Text="Глубина внедрения в каналы"/>
                                     <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Глубина внедрения указывает количество бит, используемых для скрытия данных в канале пикселя изображения."/>
-                                </StackPanel>
+                                </StackPanel>   
+                                       
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.AvailablePixelChannels}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="controlsViewModel:PixelChannelControlViewModel">
+                                            <controlsView:PixelChannelControl ViewModel="{x:Bind}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <primitives:WrapPanel HorizontalSpacing="50" VerticalSpacing="25"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                                            
                             </StackPanel>
+                            
                         </controls:SettingsCard>
 
                         <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical">

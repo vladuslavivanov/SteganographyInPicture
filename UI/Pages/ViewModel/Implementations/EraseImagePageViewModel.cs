@@ -4,14 +4,13 @@ using SteganographyInPicture.Services.Implementations;
 using SteganographyInPicture.Steganography.Implementations;
 using SixLabors.ImageSharp;
 using System.Threading.Tasks;
-using SteganographyInPicture.DTO;
 
 namespace SteganographyInPicture.UI.Pages.ViewModel.Implementations;
 
 public partial class EraseImagePageViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string pathToImage;
+    private string pathToImage = "";
 
     [ObservableProperty]
     private int encodingDepth;

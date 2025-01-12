@@ -19,9 +19,9 @@ internal class ImageSteganography
     {
         #region Валидация
 
-        if (encryptPhotoDto.BitDepth < 1)
+        if (encryptPhotoDto.PixelsBitDepth.All(p => p.EncodingDepth == 0))
         {
-            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
+            throw new ArgumentException(null, "Глубина встраивания не может быть 0 на всех каналах.");
         }
 
         #endregion
@@ -36,15 +36,13 @@ internal class ImageSteganography
         cloneImage.CopyPixelDataTo(arrayOfPixels);
 
         // Пиксели только с сокрытыми данными.
-        var textInPixels = (await new ConverterService().ConvertTextToRgb24ArrayAsync(encryptPhotoDto.Text, encryptPhotoDto.BitDepth, encryptPhotoDto.Encoding, encryptPhotoDto.Compression))
+        var textInPixels = (await new ConverterService().ConvertTextToRgb24ArrayAsync(encryptPhotoDto.Text, encryptPhotoDto.PixelsBitDepth, encryptPhotoDto.Encoding, encryptPhotoDto.Compression))
             .ToArray();
 
         if (textInPixels.Count() > arrayOfPixels.Length)
         {
             throw new InvalidOperationException("Количество текста в пикселях превышает размер массива пикселей.");
         }
-
-        var zeroingMask = ~((1 << encryptPhotoDto.BitDepth) - 1);
 
         var frequencyOfGroups = () => 
         {
@@ -57,7 +55,8 @@ internal class ImageSteganography
             return (int)Math.Round((double)arrayOfPixels.Length / quantityGroups, MidpointRounding.AwayFromZero);
         };
 
-        var pixelAlgorithm = pixelSelector(new(arrayOfPixels, encryptPhotoDto.QuantityPixelsInGroup, frequencyOfGroups(), encryptPhotoDto.SecretKey))
+        var pixelAlgorithm = pixelSelector(new(arrayOfPixels, encryptPhotoDto.QuantityPixelsInGroup, 
+            frequencyOfGroups(), encryptPhotoDto.SecretKey))
             .GetEnumerator();
 
         for (int i = 0; i < textInPixels.Length; i++)
@@ -65,14 +64,17 @@ internal class ImageSteganography
             var dataToHide = textInPixels[i];
             
             pixelAlgorithm.MoveNext();
-
+            
             for (int chanel = 0; chanel < EncodingConsts.CHANNEL_COUNT; chanel++)
             {
                 _ = chanel switch
                 {
-                    0 => arrayOfPixels[pixelAlgorithm.Current].R = (byte)(arrayOfPixels[pixelAlgorithm.Current].R & zeroingMask | dataToHide.R),
-                    1 => arrayOfPixels[pixelAlgorithm.Current].G = (byte)(arrayOfPixels[pixelAlgorithm.Current].G & zeroingMask | dataToHide.G),
-                    2 => arrayOfPixels[pixelAlgorithm.Current].B = (byte)(arrayOfPixels[pixelAlgorithm.Current].B & zeroingMask | dataToHide.B),
+                    0 => arrayOfPixels[pixelAlgorithm.Current].R = 
+                        (byte)(arrayOfPixels[pixelAlgorithm.Current].R & ~((1 << encryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.R).EncodingDepth) - 1) | dataToHide.R),
+                    1 => arrayOfPixels[pixelAlgorithm.Current].G = 
+                        (byte)(arrayOfPixels[pixelAlgorithm.Current].G & ~((1 << encryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.G).EncodingDepth) - 1) | dataToHide.G),
+                    2 => arrayOfPixels[pixelAlgorithm.Current].B = 
+                        (byte)(arrayOfPixels[pixelAlgorithm.Current].B & ~((1 << encryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.B).EncodingDepth) - 1) | dataToHide.B),
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }
@@ -88,9 +90,9 @@ internal class ImageSteganography
     {
         #region Валидация
 
-        if (decryptPhotoDto.BitDepth < 1)
+        if (decryptPhotoDto.PixelsBitDepth.All(p => p.EncodingDepth == 0))
         {
-            throw new ArgumentException(null, "Глубина встраивания не может быть менее 1.");
+            throw new ArgumentException(null, "Глубина встраивания не может быть 0 на всех каналах.");
         }
 
         #endregion
@@ -122,8 +124,16 @@ internal class ImageSteganography
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
+                var bitDepth = i switch
+                {
+                    0 => decryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.R).EncodingDepth,
+                    1 => decryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.G).EncodingDepth,
+                    2 => decryptPhotoDto.PixelsBitDepth.First(p => p.PixelChannel == PixelChannelsEnum.B).EncodingDepth,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
                 // Извлекаем биты из канала
-                for (int j = decryptPhotoDto.BitDepth - 1; j >= 0; j--)
+                for (int j = bitDepth - 1; j >= 0; j--)
                 {
                     var bit = ((channel & (1 << j)) != 0) ?
                         (byte)1 : (byte)0;
@@ -132,6 +142,10 @@ internal class ImageSteganography
                     if (++countBits == EncodingConsts.QUANTITY_BIT_IN_BYTE)
                     {
                         arrayOfBytes.Add(symbol);
+                        if(arrayOfBytes.Count() == 722)
+                        {
+
+                        }
                         countBits = 0;
                         symbol = default;
 
@@ -140,7 +154,7 @@ internal class ImageSteganography
                             quantityBytes = BitConverter.ToInt32(arrayOfBytes.ToArray());
                             arrayOfBytes.Clear();
 
-                            var availableBitsForReading = pixelsSpan.Length * EncodingConsts.CHANNEL_COUNT * decryptPhotoDto.BitDepth;
+                            var availableBitsForReading = pixelsSpan.Length * EncodingConsts.CHANNEL_COUNT * bitDepth;
 
                             if (quantityBytes > availableBitsForReading / 8 || quantityBytes < 0)
                             {
