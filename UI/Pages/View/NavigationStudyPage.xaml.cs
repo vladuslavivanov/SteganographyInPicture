@@ -28,7 +28,6 @@ namespace SteganographyInPicture.UI.Pages.View
         public StudyPage()
         {
             this.InitializeComponent();
-            MainGrid.DataContext = ViewModel;
         }
 
         readonly NavStudyPageViewModel ViewModel = new();

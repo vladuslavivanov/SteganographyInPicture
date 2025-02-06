@@ -17,6 +17,7 @@
     <None Remove="UI\CustomControls\View\RGBControl.xaml" />
     <None Remove="UI\Pages\View\CalculatorPage.xaml" />
     <None Remove="UI\Pages\View\EraseImagePage.xaml" />
+    <None Remove="UI\Pages\View\SettingsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,9 +48,16 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240916" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240916" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UI\Pages\View\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UI\CustomControls\View\PixelChannelControl.xaml">
@@ -109,7 +117,10 @@
     </Page>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
+    <WebView2EnableCsWinRTProjection>True</WebView2EnableCsWinRTProjection>
+    <WebView2UseWinRT>False</WebView2UseWinRT>
+    <WebView2UseDispatchAdapter>False</WebView2UseDispatchAdapter>
+    <WebView2LoaderPreference>Dynamic</WebView2LoaderPreference>
   </PropertyGroup>
 
   <!--

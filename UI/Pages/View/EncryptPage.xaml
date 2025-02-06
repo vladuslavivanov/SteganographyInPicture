@@ -14,6 +14,7 @@
     xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
     xmlns:primitives="using:CommunityToolkit.WinUI.Controls"
     xmlns:system="using:System"
+    xmlns:scrollViewerCursorHelper="using:SteganographyInPicture.UI.Helpers"
 
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -25,6 +26,9 @@
         <toolkitConverters:EmptyStringToObjectConverter x:Key="EmptyStringToObjectConverter"
                                                  EmptyValue="False"
                                                  NotEmptyValue="True" />
+        <toolkitConverters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" 
+                                                        EmptyValue="False" 
+                                                        NotEmptyValue="True"/>
 
     </Page.Resources>
 
@@ -174,11 +178,19 @@
                 <controls:SettingsCard ContentAlignment="Left" 
                                        Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
                                        IsEnabled="{x:Bind ViewModel.TextToHide, Mode=OneWay, Converter={StaticResource EmptyStringToObjectConverter}}">
-                    <StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.EncryptImageCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <FontIcon Glyph="&#xEDE1;"/>
                                 <TextBlock Text="Зашифровать текст"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button IsEnabled="{x:Bind ViewModel.ResultImageToSave, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                                Command="{x:Bind ViewModel.SaveImageCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <FontIcon Glyph="&#xE896;"/>
+                                <TextBlock Text="Сохранить"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -199,6 +211,47 @@
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
+                <controls:SettingsExpander Header="Сравнение" HeaderIcon="Switch"
+                                           Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard ContentAlignment="Left">
+                            <Grid ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" CanBeScrollAnchor="False" Spacing="5">
+                                    <TextBlock Text="Исходное изображение"/>
+                                    <ScrollViewer ZoomMode="Enabled" MaxHeight="500" MaxZoomFactor="70"
+                                                  HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto"
+                                                  ManipulationMode="All" 
+                                                  PointerPressed="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerPressed}"
+                                                  PointerMoved="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerMoved}"
+                                                  PointerReleased="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerReleased}">
+                                        <Image Source="{x:Bind ViewModel.SourceImage, Mode=OneWay}"/>
+                                    </ScrollViewer>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Spacing="5">
+                                    <TextBlock Text="Изображение с текстом"/>
+                                    <ScrollViewer ZoomMode="Enabled" MaxHeight="500" MaxZoomFactor="70"
+                                                  HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto"
+                                                  ManipulationMode="All"
+                                                  PointerPressed="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerPressed}"
+                                                  PointerMoved="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerMoved}"
+                                                  PointerReleased="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerReleased}">
+                                        <Image Source="{x:Bind ViewModel.ResultImage, Mode=OneWay}"/>
+                                    </ScrollViewer>
+                                </StackPanel>
+
+                            </Grid>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+                
             </StackPanel>
         </ScrollViewer>
 

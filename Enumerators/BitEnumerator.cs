@@ -45,7 +45,7 @@ internal class BitEnumerator : IEnumerator<bool>
         if (++_readedBits > 7)
         {
             _readedBits = 0;
-            return ++_position < (_bytes.Length);
+            return ++_position < _bytes.Length;
         }
 
         return true;

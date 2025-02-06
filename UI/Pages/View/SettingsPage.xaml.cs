@@ -14,7 +14,6 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -24,11 +23,11 @@ namespace SteganographyInPicture.UI.Pages.View
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class DecryptPage : Page
+    public sealed partial class SettingsPage : Page
     {
-        DecryptPageViewModel ViewModel { get; set; } = new();
+        SettingsPageViewModel ViewModel { get; set; } = new();
 
-        public DecryptPage()
+        public SettingsPage()
         {
             this.InitializeComponent();
         }

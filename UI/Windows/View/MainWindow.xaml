@@ -17,8 +17,10 @@
 
     <Grid x:Name="MainGrid">
 
-        <NavigationView IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneOpen="False"
-                        MenuItemsSource="{x:Bind ViewModel.MenuItems}">
+        <NavigationView IsBackButtonVisible="Collapsed" IsPaneOpen="False"
+                        MenuItemsSource="{x:Bind ViewModel.MenuItems}"
+                        FooterMenuItemsSource="{x:Bind ViewModel.FooterMenuItems}"
+                        IsSettingsVisible="False">
             
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemInvoked">
@@ -37,6 +39,8 @@
                     </NavigationViewItem>
                 </DataTemplate>
             </NavigationView.MenuItemTemplate>
+
+
 
             <Frame Content="{x:Bind ViewModel.SelectedItem.Page, Mode=OneWay}"/>
 

@@ -39,6 +39,7 @@ public partial class CalculatorPageViewModel : ObservableObject
         OpenFileService openFileService = new OpenFileService();
         var path = await openFileService.OpenImage();
         PathToImage = path ?? "";
+        if (string.IsNullOrEmpty(PathToImage)) return;
 
         Image image = await Image.LoadAsync(PathToImage);
         height = image.Height;
@@ -72,7 +73,11 @@ public partial class CalculatorPageViewModel : ObservableObject
     async Task SaveUs()
     {
         OpenFileService openFileService = new OpenFileService();
-        var path = await openFileService.SaveUs(new() { ".png", ".jpeg", ".tiff", ".bmp" });
+        
+        var exstensionImage = PathToImage.Substring(PathToImage.LastIndexOf('.')) ??
+            throw new ArgumentNullException("Ошибка чтения расширения изображения.");
+
+        var path = await openFileService.SaveUs(new() { exstensionImage! });
 
         if (string.IsNullOrEmpty(path)) return;
 

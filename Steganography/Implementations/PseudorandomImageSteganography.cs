@@ -31,7 +31,7 @@ internal class PseudorandomImageSteganography : IImageSteganography
 
         if (string.IsNullOrEmpty(pixelSelectorDto.SecretKey))
         {
-            throw new ArgumentNullException(null, "Секретный элемент не может быть пустым!");
+            throw new ArgumentNullException("Секретный элемент не может быть пустым!");
         }
 
         #endregion

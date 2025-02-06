@@ -31,14 +31,12 @@ internal class UniformImageSteganography : IImageSteganography
 
         if (pixelSelectorDto.FrequencyOfGroups < 1)
         {
-            throw new ArgumentOutOfRangeException(null, 
-                "Частота групп не может быть менее 1.");
+            throw new ArgumentOutOfRangeException("Частота групп не может быть менее 1.");
         }
 
         if (pixelSelectorDto.QuantityPixelsInGroup < 1)
         {
-            throw new ArgumentOutOfRangeException(null, 
-                "Количество пикселей в группе не может быть менее 1.");
+            throw new ArgumentOutOfRangeException("Количество пикселей в группе не может быть менее 1.");
         }
 
         #endregion

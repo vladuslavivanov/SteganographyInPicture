@@ -1,6 +1,9 @@
-﻿using SteganographyInPicture.Services.Interfaces;
+﻿using Microsoft.UI.Xaml.Controls;
+using SteganographyInPicture.Enums;
+using SteganographyInPicture.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -9,7 +12,7 @@ namespace SteganographyInPicture.Services.Implementations;
 
 class OpenFileService : IOpenFileService
 {
-    public async Task<string?> OpenImage()
+    public async Task<string?> OpenFile(List<string>? extensions)
     {
         var picker = new FileOpenPicker();
 
@@ -22,13 +25,8 @@ class OpenFileService : IOpenFileService
         // Initialize the file picker with the window handle (HWND).
         WinRT.Interop.InitializeWithWindow.Initialize(picker, hWnd);
 
-        // Добавляем фильтры для изображений
-        picker.FileTypeFilter.Add(".jpg");
-        picker.FileTypeFilter.Add(".jpeg");
-        picker.FileTypeFilter.Add(".png");
-        picker.FileTypeFilter.Add(".bmp");
-        picker.FileTypeFilter.Add(".gif");
-        picker.FileTypeFilter.Add(".tiff");
+        // Добавление фильтров
+        extensions?.ForEach(picker.FileTypeFilter.Add);
 
         // Показываем диалог и получаем выбранный файл
         StorageFile? file = await picker.PickSingleFileAsync();
@@ -36,7 +34,14 @@ class OpenFileService : IOpenFileService
         return file?.Path;
     }
 
-    public async Task<string?> SaveUs(List<string> availableExstensions)
+    public async Task<string?> OpenImage()
+    {
+        var extensions = Enum.GetNames(typeof(ImageExtensionsEnum)).Select(e => "." + e).ToList();
+
+        return await OpenFile(extensions);
+    }
+
+    public async Task<string?> SaveUs(List<string>? availableExstensions = null)
     {
         var picker = new FileSavePicker();
 
@@ -48,6 +53,11 @@ class OpenFileService : IOpenFileService
 
         // Initialize the file picker with the window handle (HWND).
         WinRT.Interop.InitializeWithWindow.Initialize(picker, hWnd);
+
+        if(availableExstensions is null)
+            availableExstensions = 
+                Enum.GetNames(typeof(ImageExtensionsEnum)).Select(e => "." + e).ToList();
+        
 
         picker.FileTypeChoices.Add(new("Изображение", availableExstensions));
 

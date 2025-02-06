@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SteganographyInPicture.UI.Pages.View;
 using SteganographyInPicture.Models;
 using System;
+using SteganographyInPicture.Services.Implementations;
 
 namespace SteganographyInPicture.UI.Windows.ViewModel;
 
@@ -13,6 +14,10 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel()
     {
         selectedItem = menuItems[0];
+        if (SecurityAccessService.IsUserAdministrator())
+        {
+            footerMenuItems.Add(new(new SettingsPage(), "Настройки", "\uE713"));
+        }
     }
 
     [ObservableProperty]
@@ -22,7 +27,12 @@ public partial class MainWindowViewModel : ObservableObject
         new(new DecryptPage(), "Декодирование", "\uE785"),
         new(new CalculatorPage(), "Ручной расчет", "\uE8EF"),
         new(new EraseImagePage(), "Удалить информацию", "\uED61"),
-        new(new StudyPage(), "Обучение", "\uEA80"),
+    };
+
+    [ObservableProperty]
+    List<MenuItemModel> footerMenuItems = new()
+    {
+        new(new StudyPage(), "Обучение", "\uEA80")
     };
 
     [ObservableProperty]

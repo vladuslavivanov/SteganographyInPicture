@@ -76,8 +76,9 @@ internal partial class DecryptPageViewModel : ObservableObject
     {
         OpenFileService openFileService = new OpenFileService();
         var path = await openFileService.OpenImage();
-        if (path is not null)
-            PathToImage = path;
+        if (string.IsNullOrEmpty(path))
+            return;
+        PathToImage = path;
     }
 
     [RelayCommand]
@@ -105,6 +106,12 @@ internal partial class DecryptPageViewModel : ObservableObject
         }
 
         DecryptedText = text;
+    }
+
+    [RelayCommand]
+    void EraseDecryptText()
+    {
+        DecryptedText = "";
     }
 
     partial void OnSelectedMethodChanged(ImageSteganographyMethodEnum value)

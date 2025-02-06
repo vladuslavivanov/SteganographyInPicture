@@ -11,58 +11,35 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:menuItem="using:SteganographyInPicture.Models"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid x:Name="MainGrid">
+    <Page.Resources>
+        <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <NavigationView Grid.Row="0" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" PaneDisplayMode="Top" 
-                        MenuItemsSource="{x:Bind ViewModel.StudyItems}">
-            
-            <interactivity:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="ItemInvoked">
-                    <core:EventTriggerBehavior.Actions>
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.NavigateCommand}" />
-                    </core:EventTriggerBehavior.Actions>
-                </core:EventTriggerBehavior>
-            </interactivity:Interaction.Behaviors>
+        <controls:SettingsCard ContentAlignment="Left" Visibility="{x:Bind ViewModel.IsUserAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel Spacing="10" HorizontalAlignment="Left" Orientation="Vertical">
+                <Button Style="{StaticResource AccentButtonStyle}" 
+                        Command="{x:Bind ViewModel.RefreshHTMLCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <SymbolIcon Symbol="Refresh"/>
+                        <TextBlock Text="Обновить HTML."/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
 
-            <NavigationView.MenuItemTemplate>
-                <DataTemplate x:DataType="menuItem:StudyMenuItemModel">
-                    <NavigationViewItem Content="{x:Bind MenuItemName}" Tag="{x:Bind}"/>
-                </DataTemplate>
-            </NavigationView.MenuItemTemplate>
+        </controls:SettingsCard>
 
-        </NavigationView>
-
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" Grid.Row="1">
-
-            <Grid>
-                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedItem.Paragraphs, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="menuItem:Paragraph">
-                            <controls:SettingsCard ContentAlignment="Left">
-                                <StackPanel >
-                                    <TextBlock Text="{x:Bind Title}" FontWeight="Bold" TextWrapping="Wrap" />
-                                    <TextBlock Text="{x:Bind Text}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </controls:SettingsCard>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" Spacing="10" Margin="10"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </Grid>
-
-            
-
-        </ScrollViewer>
+        <WebView2 Grid.Row="1" Source="{x:Bind ViewModel.PathToStudyHtml, Mode=OneWay}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
+
 </Page>

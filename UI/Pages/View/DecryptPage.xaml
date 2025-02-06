@@ -151,21 +151,6 @@
                             </StackPanel>
                         </controls:SettingsCard>
 
-
-                        <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical" >
-
-                            <StackPanel HorizontalAlignment="Stretch" Spacing="10">
-
-                                <TextBlock Text="Расшифрованный текст"/>
-                                <TextBox HorizontalAlignment="Stretch"
-                                         TextWrapping="Wrap" MaxHeight="200"
-                                         IsReadOnly="True"
-                                         Text="{x:Bind ViewModel.DecryptedText, Mode=TwoWay}"/>
-
-                            </StackPanel>
-
-                        </controls:SettingsCard>
-
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
@@ -181,6 +166,25 @@
                     </StackPanel>
                 </controls:SettingsCard>
 
+                <controls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Vertical"
+                                       Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+
+                    <StackPanel HorizontalAlignment="Stretch" Spacing="10">
+
+                        <TextBlock Text="Расшифрованный текст"/>
+                        <TextBox HorizontalAlignment="Stretch"
+                                 TextWrapping="Wrap" MaxHeight="200"
+                                 IsReadOnly="True"
+                                 Text="{x:Bind ViewModel.DecryptedText, Mode=TwoWay}"/>
+
+                        <Button Content="Очистить текст"
+                                Command="{x:Bind ViewModel.EraseDecryptTextCommand}"/>
+
+                    </StackPanel>
+
+                </controls:SettingsCard>
+                
+                
             </StackPanel>
         </ScrollViewer>
 

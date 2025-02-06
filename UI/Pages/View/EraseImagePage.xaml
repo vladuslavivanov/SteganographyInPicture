@@ -9,12 +9,16 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:SteganographyInPicture.Converters"
     xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:scrollViewerCursorHelper="using:SteganographyInPicture.UI.Helpers"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <toolkitConverters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
         <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+        <toolkitConverters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" 
+                                                EmptyValue="False" 
+                                                NotEmptyValue="True"/>
     </Page.Resources>
     
     <Grid>
@@ -38,24 +42,78 @@
                     </StackPanel>
                 </controls:SettingsCard>
 
-                <controls:SettingsCard ContentAlignment="Left" Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+                <controls:SettingsCard ContentAlignment="Left" 
+                                       Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
 
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="Глубина очистки"/>
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <NumberBox Minimum="0" Maximum="8" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Width="200" Value="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
-                                <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Глубина внедрения указывает количество бит, которые будут заменены псевдослучайными битами."/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Выходной тип расширения"/>
+                                <ComboBox ItemsSource="{x:Bind ViewModel.AvailableExtensions, Mode=OneTime}"
+                                          SelectedItem="{x:Bind ViewModel.SelectedExtension, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Глубина очистки"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <NumberBox Minimum="0" Maximum="8" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" Width="200" Value="{x:Bind ViewModel.EncodingDepth, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}"/>
+                                    <FontIcon Glyph="&#xE946;" ToolTipService.ToolTip="Глубина внедрения указывает количество бит, которые будут заменены псевдослучайными битами."/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
-
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Очистить" Command="{x:Bind ViewModel.ClearBitsCommand}"/>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Content="Очистить" Style="{StaticResource AccentButtonStyle}" 
+                                    Command="{x:Bind ViewModel.ClearBitsCommand}"/>
+                            <Button Content="Сохранить" Command="{x:Bind ViewModel.SaveImageCommand}"
+                                    IsEnabled="{x:Bind ViewModel.ResultImageToSave, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"/>
                         </StackPanel>
                     </StackPanel>
                     
                 </controls:SettingsCard>
-                
+
+                <controls:SettingsExpander Header="Сравнение" HeaderIcon="Switch"
+                           Visibility="{x:Bind ViewModel.PathToImage, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard ContentAlignment="Left">
+                            <Grid ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" CanBeScrollAnchor="False" Spacing="5">
+                                    <TextBlock Text="Исходное изображение"/>
+                                    <ScrollViewer ZoomMode="Enabled" MaxHeight="500" MaxZoomFactor="70"
+                                                  HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto"
+                                                  ManipulationMode="All"
+                                                   PointerPressed="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerPressed}"
+                                                   PointerMoved="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerMoved}"
+                                                   PointerReleased="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerReleased}">
+                                        <Image Source="{x:Bind ViewModel.SourceImage, Mode=OneWay}" />
+                                    </ScrollViewer>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Spacing="5">
+                                    <TextBlock Text="Очищенное изображение"/>
+                                    <ScrollViewer ZoomMode="Enabled" MaxHeight="500" MaxZoomFactor="70"
+                                                  HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto"
+                                                  ManipulationMode="All"
+                                                   PointerPressed="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerPressed}"
+                                                   PointerMoved="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerMoved}"
+                                                   PointerReleased="{x:Bind scrollViewerCursorHelper:ScrollViewerCursorHelper.ScrollViewer_PointerReleased}">
+                                        <Image Source="{x:Bind ViewModel.ResultImage, Mode=OneWay}"/>
+                                    </ScrollViewer>
+                                </StackPanel>
+
+                            </Grid>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

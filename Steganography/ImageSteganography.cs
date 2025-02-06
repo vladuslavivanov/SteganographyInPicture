@@ -21,7 +21,7 @@ internal class ImageSteganography
 
         if (encryptPhotoDto.PixelsBitDepth.All(p => p.EncodingDepth == 0))
         {
-            throw new ArgumentException(null, "Глубина встраивания не может быть 0 на всех каналах.");
+            throw new ArgumentException("Глубина встраивания не может быть 0 на всех каналах.");
         }
 
         #endregion
@@ -92,7 +92,7 @@ internal class ImageSteganography
 
         if (decryptPhotoDto.PixelsBitDepth.All(p => p.EncodingDepth == 0))
         {
-            throw new ArgumentException(null, "Глубина встраивания не может быть 0 на всех каналах.");
+            throw new ArgumentException("Глубина встраивания не может быть 0 на всех каналах.");
         }
 
         #endregion

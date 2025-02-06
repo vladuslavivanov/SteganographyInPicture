@@ -65,42 +65,5 @@ static class ByteArrayExtension
         await compressionStream.FlushAsync();
 
         return outputStream.ToArray();
-    }
-       
-
-        //switch (compressionType)
-        //{
-        //    case CompressionsEnum.Gzip:
-        //        using (var inputStream = new MemoryStream(array))
-        //        {
-        //            using var outputStream = new MemoryStream();
-        //            using var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress);
-        //            await gzipStream.CopyToAsync(outputStream);
-        //            await gzipStream.FlushAsync();
-        //            return outputStream.ToArray();
-        //        }
-        //    case CompressionsEnum.Brotli:
-        //        using (var inputStream = new MemoryStream(array))
-        //        {
-        //            using var outputStream = new MemoryStream();
-        //            using var brotliStream = new BrotliStream(inputStream, CompressionMode.Decompress);
-        //            await brotliStream.CopyToAsync(outputStream);
-        //            await brotliStream.FlushAsync();
-        //            return outputStream.ToArray();
-        //        }
-        //    case CompressionsEnum.Deflate:
-        //        using (var inputStream = new MemoryStream(array))
-        //        {
-        //            using var outputStream = new MemoryStream();
-        //            using var deflateStream = new DeflateStream(inputStream, CompressionMode.Decompress);
-        //            await deflateStream.CopyToAsync(outputStream);
-        //            await deflateStream.FlushAsync();
-        //            return outputStream.ToArray();
-        //        }
-        //    case CompressionsEnum.None:
-        //        return array.ToArray();
-        //    default:
-        //        throw new NotImplementedException(nameof(compressionType));
-        //}
+    }      
 }
-
